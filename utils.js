@@ -1,38 +1,112 @@
-"use client"
-import { ethers } from "ethers";
-import { registryAbi, registryAddress } from "./contractRefs";
+"use client";
+import { ethers, parseEther } from "ethers";
+import { contractABI, contractAddress } from "./contractRefs";
 
-
+let signer = null;
 let provider;
-let signer;
-let contract;
 
-export async function connectWallet() {
-    if (window.ethereum) {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        contract = new ethers.Contract(registryAddress, registryAbi, signer);
-        return signer.getAddress();
-    } else {
-        console.error("No crypto wallet found. Please install it.");
-    }
+async function connectWithMetamask() {
+  if (typeof window.ethereum === 'undefined') {
+    console.log("MetaMask not installed; using read-only defaults");
+    provider = ethers.getDefaultProvider();
+  } else {
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    signer = await provider.getSigner();
+  }
 }
 
+async function ensureSigner() {
+  if (!signer) {
+    await connectWithMetamask();
+  }
+}
+
+connectWithMetamask();
+
+// Function to create a license
 export async function createLicense(batchTotalPrice, noOfBatches) {
-    const tx = await contract.createLicense(batchTotalPrice, noOfBatches);
-    await tx.wait();
-    return tx;
-}
+    if (!batchTotalPrice || !noOfBatches) {
+      console.error('Invalid input: batchTotalPrice and noOfBatches are required');
+      return;
+    }
+    if (typeof window.ethereum === 'undefined') {
+      console.error('Ethereum object not found. Do you have MetaMask installed?');
+      return;
+    }
+    try {
+      await ensureSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer)
+      if (typeof contract.createLicense !== 'function') {
+        throw new Error('createLicense function not found in the contract');
+      }
+      const transaction = await contract.createLicense(noOfBatches);
+      await transaction.wait();
+      console.log('License created');
+    } catch (error) {
+      console.error('Error in createLicense:', error);
+      throw error;
+    }
+  }
 
-export async function buyLicenseFractions(licenseId, quantity, totalValue) {
-    const tx = await contract.buyLicenseFractions(licenseId, quantity, { value: totalValue });
-    await tx.wait();
-    return tx;
-}
+// Function to buy license fractions
+export async function buyLicenseFractions(licenseId, quantity) {
+    if (!licenseId || !quantity) throw new Error('Invalid parameters');
+  
+    try {
+      await ensureSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      
+      const txValue = await contract.getFractionBuyPrice(licenseId, quantity);
+      
+      const transaction = await contract.buyLicenseFractions(
+        licenseId, 
+        quantity, 
+        { value: txValue }
+      );
+      await transaction.wait();
+      console.log('License fractions purchased');
+    } catch (error) {
+      console.error('Error in buyLicenseFractions:', error);
+      throw error; // Rethrow the error to handle it in the component
+    }
+  }
+  
 
+// Function to mint license fractions
 export async function mintLicenseFractions(licenseId) {
-    const tx = await contract.mintLicenseFractions(licenseId);
-    await tx.wait();
-    return tx;
+  if (!licenseId) return;
+
+  if (typeof window.ethereum !== 'undefined') {
+    try {
+      await ensureSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      const transaction = await contract.mintLicenseFractions(licenseId);
+      await transaction.wait();
+      console.log('License fractions minted');
+    } catch (error) {
+      console.error('Error in mintLicenseFractions:', error);
+    }
+  }
 }
+
+// Function to get fraction buy price
+export async function getFractionBuyPrice(licenseId, quantity) {
+    try {
+      await ensureSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      const priceWei = await contract.getFractionBuyPrice(licenseId, quantity);
+      return priceWei;
+    } catch (error) {
+      console.error('Error fetching price:', error);
+      throw error;
+    }
+  }
+
+
+
+
+
+ 
+  
+  
