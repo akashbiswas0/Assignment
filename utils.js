@@ -2,6 +2,7 @@
 import { ethers, parseEther } from "ethers";
 import { contractABI, contractAddress } from "./contractRefs";
 
+
 let signer = null;
 let provider;
 
@@ -40,7 +41,7 @@ export async function createLicense(batchTotalPrice, noOfBatches) {
       if (typeof contract.createLicense !== 'function') {
         throw new Error('createLicense function not found in the contract');
       }
-      const transaction = await contract.createLicense(noOfBatches);
+      const transaction = await contract.createLicense(batchTotalPrice,noOfBatches);
       await transaction.wait();
       console.log('License created');
     } catch (error) {
@@ -56,9 +57,7 @@ export async function buyLicenseFractions(licenseId, quantity) {
     try {
       await ensureSigner();
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
-      
       const txValue = await contract.getFractionBuyPrice(licenseId, quantity);
-      
       const transaction = await contract.buyLicenseFractions(
         licenseId, 
         quantity, 
@@ -68,7 +67,7 @@ export async function buyLicenseFractions(licenseId, quantity) {
       console.log('License fractions purchased');
     } catch (error) {
       console.error('Error in buyLicenseFractions:', error);
-      throw error; // Rethrow the error to handle it in the component
+      throw error; 
     }
   }
   
@@ -82,6 +81,7 @@ export async function mintLicenseFractions(licenseId) {
       await ensureSigner();
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
       const transaction = await contract.mintLicenseFractions(licenseId);
+      console.log(transaction)
       await transaction.wait();
       console.log('License fractions minted');
     } catch (error) {
@@ -102,6 +102,7 @@ export async function getFractionBuyPrice(licenseId, quantity) {
       throw error;
     }
   }
+
 
 
 

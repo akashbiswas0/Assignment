@@ -44,6 +44,11 @@ export const contractABI  = [
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "_batchTotalPrice",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
 				"name": "_noOfBatches",
 				"type": "uint256"
 			}
@@ -233,7 +238,13 @@ export const contractABI  = [
 			}
 		],
 		"name": "mintLicenseFractions",
-		"outputs": [],
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -654,4 +665,4 @@ export const contractABI  = [
 	}
 ] //abi
 
-export const contractAddress = "0x1AEd9f10903cCE79CF7524522BfE2f5f696033cb" //contract address
+export const contractAddress = "0x50A58199E22891a1f1571efE049fb102F03D8CDd" //contract address

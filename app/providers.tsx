@@ -20,6 +20,7 @@ import {
   arbitrumSepolia,
   sepolia,
   optimismSepolia,
+  baseSepolia,
   
   zora,
 } from "wagmi/chains";
@@ -40,7 +41,7 @@ const config = getDefaultConfig({
     },
   ],
   chains: [
-       polygonAmoy,sepolia,arbitrumSepolia,
+       polygonAmoy,sepolia,arbitrumSepolia,baseSepolia,
     ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia] : []),
   ],
   ssr: true,
@@ -53,7 +54,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
-          modalSize="compact"
+          modalSize="wide"
           theme={darkTheme()} 
         >
           {children}
