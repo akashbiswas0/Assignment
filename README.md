@@ -1,6 +1,8 @@
 # Demo Video
 - [Video Demo](https://youtu.be/ThBO5Olkha4)
 
+## Documentation of the Smart Contract
+- [Documentaion Link](https://drive.google.com/file/d/1D38QYmrl7dZZJjN71aJ_CHTX5qB4oLQ9/view?usp=sharing)
 # WorkFlow of the app
 
 
