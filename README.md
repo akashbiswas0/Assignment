@@ -1,4 +1,44 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Demo Video
+[Video Demo](https://youtu.be/ThBO5Olkha4)
+
+# WorkFlow of the app
+
+sequenceDiagram
+    participant User
+    participant Owner
+    participant LicenseFractions
+    participant ERC1155Token
+
+    Owner->>LicenseFractions: Deploy Contract
+    Owner->>LicenseFractions: createLicense(_batchTotalPrice, _noOfBatches)
+    LicenseFractions->>LicenseFractions: Increment licenseId
+    LicenseFractions->>LicenseFractions: Set licenseBatchPrice
+    LicenseFractions->>LicenseFractions: Set idToRemaining
+
+    User->>LicenseFractions: buyLicenseFractions(_licenseId, _quantity)
+    LicenseFractions->>LicenseFractions: Check availability
+    LicenseFractions->>LicenseFractions: Verify payment
+    LicenseFractions->>LicenseFractions: Update canMint, idToQuantityPurchased, idToRemaining
+
+    User->>LicenseFractions: mintLicenseFractions(_licenseId)
+    LicenseFractions->>LicenseFractions: Check eligibility
+    LicenseFractions->>ERC1155Token: _mint(user, _licenseId, quantity, "")
+
+    Owner->>LicenseFractions: grantBurnAccess(_rapidNode)
+    LicenseFractions->>LicenseFractions: Set burnAccess
+
+    Note over LicenseFractions: Assume _rapidNode is set
+
+    LicenseFractions->>LicenseFractions: burn(_from, _id, _value)
+    LicenseFractions->>ERC1155Token: _burn(_from, _id, _value)
+
+    User->>LicenseFractions: getFractionBuyPrice(_licenseId, _quantity)
+    LicenseFractions-->>User: Return price
+
+    Owner->>LicenseFractions: withdraw(_beneficiary)
+    LicenseFractions->>LicenseFractions: Check balance
+    LicenseFractions-->>Owner: Transfer funds
+
 
 ## Getting Started
 
@@ -16,21 +56,5 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
