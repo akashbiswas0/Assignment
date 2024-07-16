@@ -1,6 +1,6 @@
 import prisma from './DB/index.js';
 
-const chainId = '1244';
+const chainId = '421614';
 const batchSize = 10;
 
 async function createBatchTable(batchNumber) {
@@ -58,15 +58,15 @@ async function mintNFT(data) {
     console.log(`Minted NFT: Token ID ${tokenId}, Batch Table ${tableName}`);
 }
 
-// Example data from minting process
+
 const mintingData = {
-    fractionalAddress: "0xfAc4CB8916437334269f8225EDB24F82A7C7e36A",
+    fractionalAddress: "0xc5429705b931d171d35A16E24fCb8Cf10481A516",
     walletAddress: "0xA879eB55AaD088A8a19E06610129d4CDb4f2c99b",
 };
 
 (async () => {
     try {
-        // Create the initial batch table if it doesn't exist
+        // Create the initial batch table 
         const initialBatchNumber = await getLatestBatchNumber();
         if (initialBatchNumber === 1) {
             await createBatchTable(1);
